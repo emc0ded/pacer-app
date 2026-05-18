@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pacer — Project Dashboard</title>
+<style>
+  :root {
+    color-scheme: light;
+    --amber: #f5a623;
+    --amber-light: #fff8ec;
+    --amber-border: #f5a62340;
+    --bg: #f9f9f7;
+    --card: #ffffff;
+    --border: #e8e8e4;
+    --text: #1a1a1a;
+    --text-2: #555;
+    --text-3: #999;
+    --danger: #e74c3c;
+    --green: #2ecc71;
+    --blue: #3498db;
+    --radius: 12px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 0;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-wordmark {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.25em;
+    color: var(--amber);
+  }
+  .header-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .header-sep { color: var(--border); }
+  .header-meta {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-3);
+  }
+  #last-saved { font-style: italic; }
+
+  /* ── Layout ── */
+  .page { padding: 24px; max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fafaf8;
+  }
+  .card-header .icon { font-size: 16px; }
+  .card-header h2 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-2);
+  }
+  .card-body { padding: 18px; }
+
+  /* ── Identity grid ── */
+  .identity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .identity-grid .full { grid-column: 1 / -1; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-3);
+    margin-bottom: 5px;
+  }
+  .field input, .field textarea, .field select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text);
+    background: #fff;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--amber);
+  }
+  .field textarea { min-height: 72px; }
+
+  /* ── Status pills ── */
+  .status-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .pill.active-pill { border-color: currentColor; }
+  .pill-amber { background: var(--amber-light); color: var(--amber); }
+  .pill-green { background: #f0fdf4; color: #16a34a; }
+  .pill-blue  { background: #eff6ff; color: #2563eb; }
+  .pill-gray  { background: #f4f4f4; color: #777; }
+
+  /* ── Roadmap ── */
+  .roadmap { display: flex; flex-direction: column; gap: 10px; }
+  .week-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #fafaf8;
+    transition: background 0.15s;
+  }
+  .week-row:hover { background: var(--amber-light); }
+  .week-num {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    min-width: 52px;
+    padding-top: 1px;
+  }
+  .week-content { flex: 1; }
+  .week-content input {
+    width: 100%;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 4px;
+    font-family: inherit;
+  }
+  .week-content input:focus { outline: none; color: var(--amber); }
+  .week-content textarea {
+    width: 100%;
+    font-size: 12px;
+    color: var(--text-2);
+    background: transparent;
+    border: none;
+    padding: 0;
+    resize: none;
+    font-family: inherit;
+    min-height: 36px;
+  }
+  .week-content textarea:focus { outline: none; }
+  .week-status select {
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-2);
+    cursor: pointer;
+  }
+
+  /* ── Log tables ── */
+  .log-table { width: 100%; border-collapse: collapse; }
+  .log-table th {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-3);
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .log-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    font-size: 13px;
+  }
+  .log-table tr:last-child td { border-bottom: none; }
+  .log-table td input, .log-table td textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    color: var(--text);
+    font-family: inherit;
+    resize: none;
+    padding: 0;
+  }
+  .log-table td input:focus, .log-table td textarea:focus { outline: none; color: var(--amber); }
+  .log-table td textarea { min-height: 40px; }
+  .log-table .del-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-3);
+    font-size: 15px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color 0.15s;
+  }
+  .log-table .del-btn:hover { color: var(--danger); }
+
+  /* ── Add buttons ── */
+  .add-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--text-3);
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .add-btn:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-light); }
+
+  /* ── Source list ── */
+  .source-list { display: flex; flex-direction: column; gap: 8px; }
+  .source-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: #fafaf8;
+  }
+  .source-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--amber);
+    flex-shrink: 0;
+  }
+  .source-item input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .source-item input:focus { outline: none; color: var(--amber); }
+  .source-item .del-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-3);
+    font-size: 14px;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+  .source-item .del-btn:hover { color: var(--danger); }
+
+  /* ── Links board ── */
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .link-card {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fafaf8;
+    position: relative;
+  }
+  .link-card input.link-label {
+    display: block;
+    width: 100%;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    background: transparent;
+    border: none;
+    margin-bottom: 4px;
+    font-family: inherit;
+  }
+  .link-card input.link-url {
+    display: block;
+    width: 100%;
+    font-size: 13px;
+    color: var(--amber);
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    word-break: break-all;
+  }
+  .link-card input:focus { outline: none; }
+  .link-card .del-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-3);
+    font-size: 13px;
+  }
+  .link-card .del-btn:hover { color: var(--danger); }
+
+  /* ── Save bar ── */
+  .save-bar {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    gap: 8px;
+    z-index: 200;
+  }
+  .save-btn {
+    background: var(--amber);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(245,166,35,0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+    font-family: inherit;
+  }
+  .save-btn:active { transform: scale(0.97); }
+  .save-btn.saved { background: #16a34a; box-shadow: 0 4px 12px rgba(22,163,74,0.3); }
+
+  /* ── Two-col layout for logs ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } .identity-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="header-wordmark">PACER</span>
+  <span class="header-sep">|</span>
+  <span class="header-title">Project Dashboard</span>
+  <span class="header-meta">Last saved: <span id="last-saved">never</span></span>
+</div>
+
+<div class="page">
+
+  <!-- ── Identity Card ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">🪪</span>
+      <h2>Project Identity</h2>
+    </div>
+    <div class="card-body">
+      <div class="identity-grid">
+        <div class="field">
+          <label>Project Name</label>
+          <input id="proj-name" type="text" placeholder="e.g. Pacer" />
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <div class="status-row" id="status-row">
+            <span class="pill pill-amber" data-val="In Progress" onclick="setStatus(this)">In Progress</span>
+            <span class="pill pill-green" data-val="Shipped" onclick="setStatus(this)">Shipped</span>
+            <span class="pill pill-blue" data-val="On Hold" onclick="setStatus(this)">On Hold</span>
+            <span class="pill pill-gray" data-val="Planning" onclick="setStatus(this)">Planning</span>
+          </div>
+        </div>
+        <div class="field full">
+          <label>Inquiry Brief / Research Question</label>
+          <textarea id="proj-inquiry" placeholder="What problem is this solving? What are you exploring or trying to prove?"></textarea>
+        </div>
+        <div class="field">
+          <label>Tech Stack</label>
+          <input id="proj-stack" type="text" placeholder="e.g. Vue 3, Firebase, Capacitor, iOS" />
+        </div>
+        <div class="field">
+          <label>Repo / GitHub</label>
+          <input id="proj-repo" type="text" placeholder="e.g. github.com/emc0ded/pacer-app" />
+        </div>
+        <div class="field full">
+          <label>Notes</label>
+          <textarea id="proj-notes" placeholder="Anything else to keep top of mind..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Weekly Roadmap ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">🗓️</span>
+      <h2>Weekly Roadmap</h2>
+    </div>
+    <div class="card-body">
+      <div class="roadmap" id="roadmap"></div>
+      <button class="add-btn" onclick="addWeek()">+ Add Week</button>
+    </div>
+  </div>
+
+  <!-- ── Sources ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">📚</span>
+      <h2>Source Starter List</h2>
+    </div>
+    <div class="card-body">
+      <div class="source-list" id="source-list"></div>
+      <button class="add-btn" onclick="addSource()">+ Add Source</button>
+    </div>
+  </div>
+
+  <!-- ── Logs ── -->
+  <div class="two-col">
+
+    <!-- Prompt Log -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">💬</span>
+        <h2>Prompt Log</h2>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="log-table" id="prompt-log">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Prompt / Result</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="prompt-tbody"></tbody>
+        </table>
+        <div style="padding: 10px 14px;">
+          <button class="add-btn" onclick="addPromptRow()">+ Add Entry</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Experiment Log -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">🧪</span>
+        <h2>Experiment Log</h2>
+      </div>
+      <div class="card-body" style="padding:0">
+        <table class="log-table" id="exp-log">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Experiment / Outcome</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="exp-tbody"></tbody>
+        </table>
+        <div style="padding: 10px 14px;">
+          <button class="add-btn" onclick="addExpRow()">+ Add Entry</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Links Board ── -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">🔗</span>
+      <h2>Links / Workspace Board</h2>
+    </div>
+    <div class="card-body">
+      <div class="links-grid" id="links-grid"></div>
+      <button class="add-btn" style="margin-top:14px" onclick="addLink()">+ Add Link</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Save button -->
+<div class="save-bar">
+  <button class="save-btn" id="save-btn" onclick="saveAll()">💾 Save</button>
+</div>
+
+<script>
+// ── Storage key ──
+const KEY = 'pacer-dashboard-v1';
+
+// ── Default data ──
+const defaults = {
+  name: 'Pacer',
+  status: 'In Progress',
+  inquiry: 'How can a mobile running app best combine real-time GPS tracking, AI-generated adaptive training plans, and a clean native-feeling UX to help everyday runners improve consistently?',
+  stack: 'Vue 3, Pinia, Firebase, Capacitor, iOS',
+  repo: 'github.com/emc0ded/pacer-app',
+  notes: '',
+  weeks: [
+    { num: 'Week 5', title: 'Core GPS + Map Preview', notes: 'SVG route thumbnails in History & Routes. Fix iOS GPS permissions.', status: 'Done' },
+    { num: 'Week 6', title: 'AI Training Plans', notes: 'Cloud Function for plan generation & weekly adaptation. Plan store + Home UI.', status: 'Done' },
+    { num: 'Week 7', title: 'Auth & Firebase Fixes', notes: 'initializeAuth fix for Capacitor WKWebView. Firestore rules for plan subcollection.', status: 'Done' },
+    { num: 'Week 8', title: 'UX Polish', notes: 'Setup sheet sticky footer, select dropdowns for date, remove camera overlay.', status: 'Done' },
+    { num: 'Week 9', title: 'GitHub + Claude Code', notes: 'Push to public repo. Set up Claude Code for terminal-based dev sessions.', status: 'In Progress' },
+    { num: 'Week 10', title: 'Testing & Beta', notes: 'TestFlight build, user testing, performance profiling.', status: 'To Do' },
+    { num: 'Week 11', title: 'App Store Submission', notes: 'Screenshots, App Store listing, privacy policy, submit for review.', status: 'To Do' },
+  ],
+  sources: [
+    'Apple Developer Docs — CoreLocation / WKWebView',
+    'Firebase Docs — Firestore security rules, Auth',
+    'Capacitor Docs — iOS native plugin integration',
+    'Anthropic API Docs — Claude function calling',
+    'Vue 3 Composition API — Pinia state management',
+  ],
+  prompts: [
+    { date: today(), text: 'Add SVG route map previews to History and Routes pages' },
+    { date: today(), text: 'Fix initializeAuth for Capacitor WKWebView persistence' },
+    { date: today(), text: 'Build AI adaptive training plan feature (Cloud Function + Pinia store)' },
+  ],
+  experiments: [
+    { date: today(), text: 'Tried native <input type="date"> → iOS picker constraint warnings → switched to <select> dropdowns' },
+    { date: today(), text: 'AI JSON parse failures at 3500 tokens → regex extraction + increased to 8000 tokens' },
+  ],
+  links: [
+    { label: 'GitHub Repo', url: 'https://github.com/emc0ded/pacer-app' },
+    { label: 'Firebase Console', url: 'https://console.firebase.google.com' },
+    { label: 'Anthropic Console', url: 'https://console.anthropic.com' },
+    { label: 'Apple Dev Portal', url: 'https://developer.apple.com' },
+    { label: 'Capacitor Docs', url: 'https://capacitorjs.com/docs' },
+  ],
+};
+
+function today() {
+  return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// ── Load / render ──
+function load() {
+  const raw = localStorage.getItem(KEY);
+  return raw ? JSON.parse(raw) : defaults;
+}
+
+function render(d) {
+  document.getElementById('proj-name').value    = d.name || '';
+  document.getElementById('proj-inquiry').value = d.inquiry || '';
+  document.getElementById('proj-stack').value   = d.stack || '';
+  document.getElementById('proj-repo').value    = d.repo || '';
+  document.getElementById('proj-notes').value   = d.notes || '';
+  setStatusDisplay(d.status || 'In Progress');
+  renderWeeks(d.weeks || []);
+  renderSources(d.sources || []);
+  renderLog('prompt-tbody', d.prompts || [], addPromptRow);
+  renderLog('exp-tbody', d.experiments || [], addExpRow);
+  renderLinks(d.links || []);
+  if (d.lastSaved) document.getElementById('last-saved').textContent = d.lastSaved;
+}
+
+// ── Status ──
+function setStatusDisplay(val) {
+  document.querySelectorAll('#status-row .pill').forEach(p => {
+    p.classList.toggle('active-pill', p.dataset.val === val);
+  });
+}
+function setStatus(el) {
+  document.querySelectorAll('#status-row .pill').forEach(p => p.classList.remove('active-pill'));
+  el.classList.add('active-pill');
+}
+
+// ── Weeks ──
+const WEEK_STATUSES = ['To Do', 'In Progress', 'Done', 'Blocked'];
+function renderWeeks(weeks) {
+  const el = document.getElementById('roadmap');
+  el.innerHTML = '';
+  weeks.forEach((w, i) => {
+    el.appendChild(makeWeekRow(w, i));
+  });
+}
+function makeWeekRow(w, i) {
+  const div = document.createElement('div');
+  div.className = 'week-row';
+  div.dataset.idx = i;
+
+  const statusColor = { 'Done': '#16a34a', 'In Progress': '#f5a623', 'Blocked': '#e74c3c', 'To Do': '#aaa' };
+
+  div.innerHTML = `
+    <div class="week-num" contenteditable="true" spellcheck="false">${w.num || 'Week'}</div>
+    <div class="week-content">
+      <input type="text" placeholder="Week title..." value="${esc(w.title || '')}" />
+      <textarea placeholder="Goals, tasks, notes...">${esc(w.notes || '')}</textarea>
+    </div>
+    <div class="week-status">
+      <select style="color: ${statusColor[w.status] || '#aaa'}">
+        ${WEEK_STATUSES.map(s => `<option value="${s}" ${s === w.status ? 'selected' : ''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <button class="del-btn" onclick="removeWeek(${i})" title="Remove week">✕</button>
+  `;
+  div.querySelector('select').addEventListener('change', function() {
+    this.style.color = statusColor[this.value] || '#aaa';
+  });
+  return div;
+}
+function addWeek() {
+  const roadmap = document.getElementById('roadmap');
+  const count = roadmap.children.length + 1;
+  const w = { num: `Week ${count}`, title: '', notes: '', status: 'To Do' };
+  roadmap.appendChild(makeWeekRow(w, roadmap.children.length));
+}
+function removeWeek(i) {
+  const rows = document.querySelectorAll('.week-row');
+  if (rows[i]) rows[i].remove();
+}
+
+// ── Sources ──
+function renderSources(sources) {
+  const el = document.getElementById('source-list');
+  el.innerHTML = '';
+  sources.forEach((s, i) => el.appendChild(makeSourceItem(s, i)));
+}
+function makeSourceItem(s, i) {
+  const div = document.createElement('div');
+  div.className = 'source-item';
+  div.innerHTML = `
+    <div class="source-dot"></div>
+    <input type="text" value="${esc(s)}" placeholder="Source title, URL, or note..." />
+    <button class="del-btn" onclick="this.closest('.source-item').remove()">✕</button>
+  `;
+  return div;
+}
+function addSource() {
+  const el = document.getElementById('source-list');
+  el.appendChild(makeSourceItem('', el.children.length));
+  el.lastChild.querySelector('input').focus();
+}
+
+// ── Logs ──
+function renderLog(tbodyId, rows, addFn) {
+  const tbody = document.getElementById(tbodyId);
+  tbody.innerHTML = '';
+  rows.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="width:80px;white-space:nowrap"><input type="text" value="${esc(r.date || '')}" placeholder="${today()}" /></td>
+      <td><textarea>${esc(r.text || '')}</textarea></td>
+      <td style="width:28px"><button class="del-btn" onclick="this.closest('tr').remove()">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function addRow(tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td style="width:80px;white-space:nowrap"><input type="text" value="${today()}" /></td>
+    <td><textarea placeholder="Entry..."></textarea></td>
+    <td style="width:28px"><button class="del-btn" onclick="this.closest('tr').remove()">✕</button></td>
+  `;
+  tbody.appendChild(tr);
+  tr.querySelector('textarea').focus();
+}
+function addPromptRow() { addRow('prompt-tbody'); }
+function addExpRow()    { addRow('exp-tbody'); }
+
+// ── Links ──
+function renderLinks(links) {
+  const el = document.getElementById('links-grid');
+  el.innerHTML = '';
+  links.forEach(l => el.appendChild(makeLinkCard(l)));
+}
+function makeLinkCard(l) {
+  const div = document.createElement('div');
+  div.className = 'link-card';
+  div.innerHTML = `
+    <button class="del-btn" onclick="this.closest('.link-card').remove()">✕</button>
+    <input class="link-label" type="text" value="${esc(l.label || '')}" placeholder="Label" />
+    <input class="link-url" type="text" value="${esc(l.url || '')}" placeholder="https://..." />
+  `;
+  return div;
+}
+function addLink() {
+  const el = document.getElementById('links-grid');
+  el.appendChild(makeLinkCard({ label: '', url: '' }));
+  el.lastChild.querySelector('.link-label').focus();
+}
+
+// ── Save ──
+function saveAll() {
+  const status = document.querySelector('#status-row .active-pill')?.dataset.val || 'In Progress';
+  const now = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+
+  // Weeks
+  const weekRows = document.querySelectorAll('.week-row');
+  const weeks = Array.from(weekRows).map(row => ({
+    num:    row.querySelector('.week-num')?.textContent?.trim() || '',
+    title:  row.querySelector('input[type=text]')?.value || '',
+    notes:  row.querySelector('textarea')?.value || '',
+    status: row.querySelector('select')?.value || 'To Do',
+  }));
+
+  // Sources
+  const sources = Array.from(document.querySelectorAll('.source-item input')).map(i => i.value).filter(Boolean);
+
+  // Logs
+  const prompts = Array.from(document.querySelectorAll('#prompt-tbody tr')).map(tr => ({
+    date: tr.cells[0]?.querySelector('input')?.value || '',
+    text: tr.cells[1]?.querySelector('textarea')?.value || '',
+  }));
+  const experiments = Array.from(document.querySelectorAll('#exp-tbody tr')).map(tr => ({
+    date: tr.cells[0]?.querySelector('input')?.value || '',
+    text: tr.cells[1]?.querySelector('textarea')?.value || '',
+  }));
+
+  // Links
+  const links = Array.from(document.querySelectorAll('.link-card')).map(c => ({
+    label: c.querySelector('.link-label')?.value || '',
+    url:   c.querySelector('.link-url')?.value || '',
+  }));
+
+  const data = {
+    name: document.getElementById('proj-name').value,
+    status,
+    inquiry: document.getElementById('proj-inquiry').value,
+    stack: document.getElementById('proj-stack').value,
+    repo: document.getElementById('proj-repo').value,
+    notes: document.getElementById('proj-notes').value,
+    weeks, sources, prompts, experiments, links,
+    lastSaved: now,
+  };
+
+  localStorage.setItem(KEY, JSON.stringify(data));
+  document.getElementById('last-saved').textContent = now;
+
+  const btn = document.getElementById('save-btn');
+  btn.textContent = '✓ Saved';
+  btn.classList.add('saved');
+  setTimeout(() => {
+    btn.textContent = '💾 Save';
+    btn.classList.remove('saved');
+  }, 2000);
+}
+
+// ── Util ──
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── Boot ──
+render(load());
+</script>
+</body>
+</html>
