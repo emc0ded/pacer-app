@@ -1,7 +1,18 @@
 <template>
   <div class="map-preview" :style="{ width: size + 'px', height: size + 'px' }">
+    <!-- Stationary run: single location dot -->
     <svg
-      v-if="points.length >= 2"
+      v-if="points.length === 1"
+      :viewBox="`0 0 ${W} ${H}`"
+      preserveAspectRatio="xMidYMid meet"
+      class="preview-svg"
+    >
+      <circle :cx="W/2" :cy="H/2" r="7" fill="#f5a623" opacity="0.18" />
+      <circle :cx="W/2" :cy="H/2" r="4" fill="#f5a623" stroke="var(--bg-card,#1c1c1e)" stroke-width="1.5" />
+    </svg>
+
+    <svg
+      v-else-if="points.length >= 2"
       :viewBox="`0 0 ${W} ${H}`"
       preserveAspectRatio="xMidYMid meet"
       class="preview-svg"
@@ -53,7 +64,7 @@
       />
     </svg>
 
-    <!-- Fallback for no GPS data -->
+    <!-- Fallback: no GPS data at all -->
     <div v-else class="no-route">
       <span>—</span>
     </div>
@@ -89,12 +100,15 @@ const PAD = 14 // padding so dots don't clip
  */
 const points = computed(() => {
   const raw = props.coordinates
-  if (!raw || raw.length < 2) return []
+  if (!raw || raw.length < 1) return []
 
   // Normalise to { lng, lat }
   const coords = raw.map((c) =>
     Array.isArray(c) ? { lng: c[0], lat: c[1] } : c,
   )
+
+  // Single stationary point — return it centered in the viewBox
+  if (coords.length === 1) return [[W / 2, H / 2]]
 
   // Bounding box
   let minLng = Infinity, maxLng = -Infinity

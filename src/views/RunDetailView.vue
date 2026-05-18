@@ -136,48 +136,54 @@ let mapInstance = null
 // so the map never mounts until we have a real center to give it
 const runCenter = computed(() => {
   const coords = run.value?.coordinates
-  if (!coords || coords.length < 2) return null
-  return coords[Math.floor(coords.length / 2)]
+  if (!coords || coords.length < 1) return null
+  const mid = coords[Math.floor(coords.length / 2)]
+  return Array.isArray(mid) ? { lng: mid[0], lat: mid[1] } : mid
 })
 
 function onMapLoaded(map) {
   mapInstance = map
-  // By the time the map mounts, run data is guaranteed to be present
-  // (because v-if="runCenter" blocked rendering until it was ready)
   const coords = run.value?.coordinates
-  if (coords?.length >= 2) drawRoute(coords)
+  if (coords?.length >= 1) drawRoute(coords)
 }
 
-function drawRoute(coords) {
-  if (!mapInstance || coords.length < 2) return
+function drawRoute(rawCoords) {
+  if (!mapInstance || rawCoords.length < 1) return
 
-  // Draw the route line
-  mapInstance.addSource('route', {
-    type: 'geojson',
-    data: { type: 'Feature', geometry: { type: 'LineString', coordinates: coords } },
-  })
-  mapInstance.addLayer({
-    id: 'route',
-    type: 'line',
-    source: 'route',
-    layout: { 'line-cap': 'round', 'line-join': 'round' },
-    paint: {
-      'line-color': '#f5a623',
-      'line-width': ['interpolate', ['linear'], ['zoom'], 12, 3, 18, 6],
-    },
-  })
-
-  // Start marker (green)
-  addMarker(coords[0], '#32d74b')
-  // End marker (red)
-  addMarker(coords[coords.length - 1], '#ff453a')
-
-  // Fit map to the full route
-  const bounds = coords.reduce(
-    (b, c) => b.extend(c),
-    new mapboxgl.LngLatBounds(coords[0], coords[0]),
+  // Normalise to { lng, lat } objects (handles both legacy [lng,lat] arrays and new objects)
+  const coords = rawCoords.map((c) =>
+    Array.isArray(c) ? { lng: c[0], lat: c[1] } : c,
   )
-  mapInstance.fitBounds(bounds, { padding: 60, maxZoom: 17, duration: 800 })
+
+  if (coords.length >= 2) {
+    // GeoJSON requires [lng, lat] arrays
+    const lngLats = coords.map(({ lng, lat }) => [lng, lat])
+    mapInstance.addSource('route', {
+      type: 'geojson',
+      data: { type: 'Feature', geometry: { type: 'LineString', coordinates: lngLats } },
+    })
+    mapInstance.addLayer({
+      id: 'route',
+      type: 'line',
+      source: 'route',
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': '#f5a623',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 12, 3, 18, 6],
+      },
+    })
+    addMarker(coords[0], '#32d74b')
+    addMarker(coords[coords.length - 1], '#ff453a')
+    const bounds = coords.reduce(
+      (b, c) => b.extend(c),
+      new mapboxgl.LngLatBounds(coords[0], coords[0]),
+    )
+    mapInstance.fitBounds(bounds, { padding: 60, maxZoom: 17, duration: 800 })
+  } else {
+    // Stationary run — just drop a marker at the single point
+    addMarker(coords[0], '#f5a623')
+    mapInstance.flyTo({ center: coords[0], zoom: 15, duration: 800 })
+  }
 }
 
 function addMarker(coord, color) {
@@ -203,9 +209,13 @@ function startEditName() {
 
 async function saveName() {
   if (nameValue.value.trim() && run.value) {
-    await runStore.renameRun(authStore.uid, run.value.id, nameValue.value)
+    await runStore.renameRun(authStore.uid, run.value.id, toTitleCase(nameValue.value.trim()))
   }
   editingName.value = false
+}
+
+function toTitleCase(str) {
+  return str.replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
 // ── Delete ─────────────────────────────────────────────────────

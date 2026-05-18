@@ -114,6 +114,16 @@
           </div>
         </div>
 
+        <!-- Run name -->
+        <div class="name-section">
+          <input
+            v-model="runName"
+            class="run-name-input"
+            maxlength="60"
+            :placeholder="coachingLoading ? 'Generating name…' : 'Name your run…'"
+          />
+        </div>
+
         <!-- Effort rating -->
         <div class="effort-section">
           <span class="effort-label">How hard was it?</span>
@@ -232,6 +242,9 @@ const saving         = ref(false)
 const coachingText    = ref('')
 const coachingLoading = ref(false)
 const coachingError   = ref(false)
+
+// Run name (pre-filled from AI, editable by user before saving)
+const runName = ref('')
 
 // Effort rating
 const effortRating = ref(null)
@@ -537,6 +550,8 @@ async function fetchAIInsights(distanceKm, duration, pace) {
 
     coachingText.value           = coaching
     summaryData.value._aiName    = routeName
+    // Only populate the name field if the user hasn't typed anything yet
+    if (!runName.value) runName.value = routeName
   } catch (err) {
     console.error('[coaching]', err)
     coachingError.value = true
@@ -548,12 +563,15 @@ async function fetchAIInsights(distanceKm, duration, pace) {
 async function saveRun() {
   saving.value = true
   try {
+    const finalName = toTitleCase(
+      runName.value.trim() || summaryData.value._aiName || `Run on ${new Date().toLocaleDateString()}`
+    )
     await runStore.addRun(authStore.uid, {
-      name:        summaryData.value._aiName || `Run on ${new Date().toLocaleDateString()}`,
+      name:        finalName,
       date:        new Date().toISOString(),
       distance:    summaryData.value._distance,
       duration:    summaryData.value._duration,
-      coordinates: summaryData.value._coords,
+      coordinates: summaryData.value._coords.map(([lng, lat]) => ({ lng, lat })),
       splits:        summaryData.value._splits.length > 0 ? summaryData.value._splits : null,
       elevationGain: summaryData.value._elevationGain ?? null,
       effort:        effortRating.value,
@@ -563,6 +581,7 @@ async function saveRun() {
     elapsedMs.value    = 0
     effortRating.value = null
     coachingText.value = ''
+    runName.value      = ''
     splits.value       = []
     routeStore.clearSelectedRoute()
   } catch (err) {
@@ -577,6 +596,7 @@ function discardRun() {
   elapsedMs.value    = 0
   effortRating.value = null
   coachingText.value = ''
+  runName.value      = ''
   splits.value       = []
   splitToast.value   = null
   routeStore.clearSelectedRoute()
@@ -592,6 +612,11 @@ function startTimer() {
 function stopTimer() {
   clearInterval(timerInterval)
   timerInterval = null
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function toTitleCase(str) {
+  return str.replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
 // ── Haversine distance (metres) ────────────────────────────────
@@ -795,6 +820,25 @@ onUnmounted(() => {
   border-radius: 2px;
   background: var(--divider);
 }
+
+/* ── Run name input ─────────────────────────────────────────── */
+.name-section { width: 100%; }
+
+.run-name-input {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.run-name-input:focus { border-color: #f5a623; }
+.run-name-input::placeholder { color: var(--text-3); font-weight: 400; }
 
 /* ── Effort rating ──────────────────────────────────────────── */
 .effort-section {

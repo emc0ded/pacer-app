@@ -139,8 +139,12 @@ function startRename(run) {
 
 async function confirmRename(runId) {
   if (!editingName.value.trim()) { cancelRename(); return }
-  await runStore.renameRun(authStore.uid, runId, editingName.value)
+  await runStore.renameRun(authStore.uid, runId, toTitleCase(editingName.value.trim()))
   editingId.value = null
+}
+
+function toTitleCase(str) {
+  return str.replace(/\b\w/g, (c) => c.toUpperCase())
 }
 
 function cancelRename() {
