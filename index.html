@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <!-- Mobile viewport — viewport-fit=cover for iPhone notch/island -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- PWA / theme -->
+    <meta name="theme-color" content="#0f0f0f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Pacer" />
+
+    <!-- Touch icons for iOS "Add to Home Screen" -->
+    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+
+    <title>Pacer</title>
+  </head>
+  <body>
+    <!-- Set theme before first paint to prevent flash -->
+    <script>
+      document.documentElement.setAttribute(
+        'data-theme',
+        localStorage.getItem('pacer-theme') || 'light'
+      )
+    </script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

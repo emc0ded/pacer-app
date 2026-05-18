@@ -1,0 +1,11 @@
+{
+  "appId": "com.emilyherbert.pacer",
+  "appName": "pacer",
+  "webDir": "dist",
+  "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": true,
+      "providers": ["apple.com", "google.com"]
+    }
+  }
+}
