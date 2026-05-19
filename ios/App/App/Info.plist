@@ -66,5 +66,9 @@
 	<string>Pacer uses your location to track your run route and distance in real time.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Pacer uses your location to track your run route and distance.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Pacer reads your health data to complement your running stats.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Pacer saves your runs to Apple Health so they count toward your Activity rings.</string>
 </dict>
 </plist>

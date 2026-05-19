@@ -20,6 +20,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 import { db } from '@/firebase'
+import { hkIsAvailable, hkRequestAuthorization, hkSaveWorkout } from '@/plugins/healthkit'
 
 export const useRunStore = defineStore('run', () => {
   // ── State ───────────────────────────────────────────────────
@@ -98,6 +99,40 @@ export const useRunStore = defineStore('run', () => {
       createdAt: serverTimestamp(),
     })
     // No need to manually push to runs[] — onSnapshot handles it
+
+    // ── Save to Apple Health (iOS only, non-fatal) ──────────────
+    _syncToHealthKit(run)
+  }
+
+  /**
+   * Write a completed run to Apple HealthKit as a Running workout.
+   * Requests authorization on first call; subsequent calls skip the prompt.
+   * Failures are logged but never surface to the user — Firestore is source of truth.
+   */
+  async function _syncToHealthKit(run) {
+    try {
+      const available = await hkIsAvailable()
+      if (!available) return
+
+      await hkRequestAuthorization()
+
+      // Build start/end ISO strings from run.date + run.duration
+      const endDate   = run.date ? new Date(run.date) : new Date()
+      const startDate = new Date(endDate.getTime() - (run.duration ?? 0))
+
+      // Estimate calories: ~70 kcal per km (rough average for a 70 kg runner)
+      const distanceKm   = (run.distance ?? 0) / 1000
+      const energyBurned = Math.round(distanceKm * 70)
+
+      await hkSaveWorkout({
+        startDate:    startDate.toISOString(),
+        endDate:      endDate.toISOString(),
+        distance:     run.distance ?? 0,   // metres
+        energyBurned: energyBurned,        // kcal
+      })
+    } catch (e) {
+      console.warn('[HealthKit] sync failed (non-fatal):', e)
+    }
   }
 
   async function renameRun(uid, runId, newName) {
