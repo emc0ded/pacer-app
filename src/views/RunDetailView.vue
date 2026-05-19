@@ -168,7 +168,7 @@ function drawRoute(rawCoords) {
       source: 'route',
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
-        'line-color': '#f5a623',
+        'line-color': getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#E8F400',
         'line-width': ['interpolate', ['linear'], ['zoom'], 12, 3, 18, 6],
       },
     })
@@ -180,8 +180,8 @@ function drawRoute(rawCoords) {
     )
     mapInstance.fitBounds(bounds, { padding: 60, maxZoom: 17, duration: 800 })
   } else {
-    // Stationary run — just drop a marker at the single point
-    addMarker(coords[0], '#f5a623')
+    const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#E8F400'
+    addMarker(coords[0], accent)
     mapInstance.flyTo({ center: coords[0], zoom: 15, duration: 800 })
   }
 }
@@ -380,7 +380,7 @@ function calcPace(run) {
 .name-input {
   width: 100%;
   background: var(--bg-elevated);
-  border: 1px solid #f5a623;
+  border: 1px solid var(--accent);
   border-radius: 8px;
   padding: 0.5rem 0.7rem;
   color: var(--text);
@@ -412,17 +412,20 @@ function calcPace(run) {
 }
 
 .stat-val {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #f5a623;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
 
 .stat-lbl {
-  font-size: 0.62rem;
-  color: var(--text-2);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: var(--text-3);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.16em;
 }
 
 /* Splits card */
@@ -464,9 +467,10 @@ function calcPace(run) {
 }
 
 .split-pace {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #f5a623;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
 
@@ -489,8 +493,9 @@ function calcPace(run) {
 .ai-chip {
   display: inline-block;
   align-self: flex-start;
-  background: rgba(245, 166, 35, 0.12);
-  color: #f5a623;
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.06em;

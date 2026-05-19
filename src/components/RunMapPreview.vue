@@ -7,8 +7,8 @@
       preserveAspectRatio="xMidYMid meet"
       class="preview-svg"
     >
-      <circle :cx="W/2" :cy="H/2" r="7" fill="#f5a623" opacity="0.18" />
-      <circle :cx="W/2" :cy="H/2" r="4" fill="#f5a623" stroke="var(--bg-card,#1c1c1e)" stroke-width="1.5" />
+      <circle :cx="W/2" :cy="H/2" r="7" fill="var(--accent, #E8F400)" opacity="0.18" />
+      <circle :cx="W/2" :cy="H/2" r="4" fill="var(--accent, #E8F400)" stroke="var(--bg-card,#1c1c1e)" stroke-width="1.5" />
     </svg>
 
     <svg
@@ -25,7 +25,7 @@
       <polyline
         :points="svgPoints"
         fill="none"
-        stroke="#f5a623"
+        stroke="var(--accent, #E8F400)"
         stroke-width="5"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -36,7 +36,7 @@
       <polyline
         :points="svgPoints"
         fill="none"
-        stroke="#f5a623"
+        stroke="var(--accent, #E8F400)"
         stroke-width="2.5"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -58,7 +58,7 @@
         :cx="points[points.length - 1][0]"
         :cy="points[points.length - 1][1]"
         r="4"
-        fill="#f5a623"
+        fill="var(--accent, #E8F400)"
         stroke="var(--bg-card,#1c1c1e)"
         stroke-width="1.5"
       />

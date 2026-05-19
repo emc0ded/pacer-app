@@ -204,8 +204,8 @@ function calcPace(run) {
 }
 
 .view-header { display: flex; flex-direction: column; gap: 0.25rem; }
-.wordmark    { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.2em; color: #f5a623; }
-.view-title  { margin: 0; font-size: 1.6rem; font-weight: 700; color: var(--text); }
+.wordmark    { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.12em; color: var(--accent); }
+.view-title  { margin: 0; font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.04em; color: var(--text); }
 
 .empty-state {
   flex: 1;
@@ -296,7 +296,7 @@ function calcPace(run) {
 .rename-input {
   width: 100%;
   background: var(--bg-elevated);
-  border: 1px solid #f5a623;
+  border: 1px solid var(--accent);
   border-radius: 8px;
   padding: 0.4rem 0.6rem;
   color: var(--text);
@@ -315,7 +315,7 @@ function calcPace(run) {
 }
 
 .run-stat   { display: flex; align-items: baseline; gap: 0.25rem; }
-.r-val      { font-size: 1.05rem; font-weight: 700; color: #f5a623; font-variant-numeric: tabular-nums; }
+.r-val      { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.04em; color: var(--accent); font-variant-numeric: tabular-nums; }
 .r-lbl      { font-size: 0.68rem; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; }
 
 /* Splits accordion */
@@ -383,9 +383,10 @@ function calcPace(run) {
 }
 
 .split-pace {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #f5a623;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
 

@@ -335,7 +335,7 @@ function drawGhostRoute() {
     source: 'planned-route',
     layout: { 'line-cap': 'round', 'line-join': 'round' },
     paint: {
-      'line-color': '#f5a623',
+      'line-color': getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#E8F400',
       'line-width': 3,
       'line-opacity': 0.35,
       'line-dasharray': [2, 3],
@@ -456,7 +456,7 @@ function updateRouteLine() {
       source: 'route',
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
-        'line-color': '#f5a623',
+        'line-color': getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#E8F400',
         'line-width': ['interpolate', ['linear'], ['zoom'], 12, 3, 18, 6],
         'line-opacity': 0.9,
       },
@@ -683,18 +683,21 @@ onUnmounted(() => {
 }
 
 .val {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.04em;
   color: var(--text);
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
 .lbl {
-  font-size: 0.6rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.45rem;
+  font-weight: 700;
   color: var(--text-2);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.16em;
 }
 
 .stat-divider {
@@ -794,7 +797,7 @@ onUnmounted(() => {
 .ctrl-btn:active { opacity: 0.75; transform: scale(0.97); }
 .ctrl-btn:disabled { opacity: 0.45; cursor: default; }
 
-.ctrl-btn.primary   { background: #f5a623; color: #0f0f0f; }
+.ctrl-btn.primary   { background: var(--accent); color: var(--accent-text); font-family: 'Bebas Neue', sans-serif; font-size: 1.15rem; letter-spacing: 0.1em; }
 .ctrl-btn.secondary { background: var(--bg-elevated); color: var(--text); }
 .ctrl-btn.danger    { background: #ff453a; color: #fff; }
 
@@ -828,7 +831,7 @@ onUnmounted(() => {
   width: 100%;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 0.7rem 1rem;
   color: var(--text);
   font-size: 1rem;
@@ -837,7 +840,7 @@ onUnmounted(() => {
   transition: border-color 0.15s;
 }
 
-.run-name-input:focus { border-color: #f5a623; }
+.run-name-input:focus { border-color: var(--accent); }
 .run-name-input::placeholder { color: var(--text-3); font-weight: 400; }
 
 /* ── Effort rating ──────────────────────────────────────────── */
@@ -849,11 +852,12 @@ onUnmounted(() => {
 }
 
 .effort-label {
-  font-size: 0.75rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
   font-weight: 700;
-  color: var(--text-2);
+  color: var(--text-3);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.18em;
 }
 
 .effort-row {
@@ -877,8 +881,8 @@ onUnmounted(() => {
 }
 
 .effort-btn.selected {
-  border-color: #f5a623;
-  background: rgba(245, 166, 35, 0.1);
+  border-color: var(--accent);
+  background: var(--accent-tint);
 }
 
 .effort-emoji { font-size: 1.3rem; }
@@ -891,7 +895,7 @@ onUnmounted(() => {
   letter-spacing: 0.04em;
 }
 
-.effort-btn.selected .effort-name { color: #f5a623; }
+.effort-btn.selected .effort-name { color: var(--accent); }
 
 .summary-title {
   font-size: 1.5rem;
@@ -913,17 +917,20 @@ onUnmounted(() => {
 }
 
 .s-val {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #f5a623;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
 
 .s-lbl {
-  font-size: 0.7rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.5rem;
+  font-weight: 700;
   color: var(--text-2);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.16em;
 }
 
 .summary-actions {
@@ -945,8 +952,9 @@ onUnmounted(() => {
 .ai-chip {
   display: inline-block;
   align-self: flex-start;
-  background: rgba(245, 166, 35, 0.12);
-  color: #f5a623;
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -986,7 +994,7 @@ onUnmounted(() => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #f5a623;
+  background: var(--accent);
   animation: dot-bounce 1.2s ease-in-out infinite;
 }
 
@@ -1017,9 +1025,10 @@ onUnmounted(() => {
 }
 
 .split-toast-mile {
+  font-family: 'IBM Plex Mono', monospace;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #0f0f0f;
+  color: var(--accent-text);
 }
 
 .split-toast-pace {
@@ -1066,9 +1075,10 @@ onUnmounted(() => {
 }
 
 .split-pace {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #f5a623;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
 

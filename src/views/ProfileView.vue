@@ -64,7 +64,7 @@
 
       <!-- Settings -->
       <div class="settings-section">
-        <div class="section-label">Settings</div>
+        <div class="section-label">// Settings</div>
 
         <!-- Dark mode -->
         <div class="settings-row">
@@ -98,7 +98,7 @@
 
       <!-- Lifetime stats -->
       <div class="stats-section">
-        <div class="section-label">Lifetime Stats</div>
+        <div class="section-label">// Lifetime Stats</div>
         <div class="lifetime-stats">
           <div class="lt-stat">
             <span class="lt-val">{{ (runStore.totalKm * 0.621371).toFixed(1) }}</span>
@@ -122,7 +122,7 @@
       <!-- Achievements -->
       <div class="achievements-section">
         <div class="section-label">
-          Achievements
+          // Achievements
           <span class="achievement-count">
             {{ runStore.unlockedCount }} / {{ runStore.achievements.length }}
           </span>
@@ -285,8 +285,8 @@ const bestPaceDisplay = computed(() => {
 }
 
 .view-header { display: flex; flex-direction: column; gap: 0.25rem; }
-.wordmark    { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.2em; color: #f5a623; }
-.view-title  { margin: 0; font-size: 1.6rem; font-weight: 700; color: var(--text); }
+.wordmark    { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.12em; color: var(--accent); }
+.view-title  { margin: 0; font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.04em; color: var(--text); }
 .loading-state { color: var(--text-2); font-size: 0.9rem; padding: 2rem 0; text-align: center; }
 
 /* Auth card */
@@ -351,13 +351,13 @@ const bestPaceDisplay = computed(() => {
   justify-content: center;
 }
 .avatar img        { width: 100%; height: 100%; object-fit: cover; }
-.avatar-initials   { font-size: 1.2rem; font-weight: 700; color: #f5a623; }
+.avatar-initials   { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.06em; color: var(--accent); }
 
 
 .user-info { display: flex; flex-direction: column; gap: 0.2rem; }
 .user-name { font-size: 1rem; font-weight: 600; color: var(--text); }
 .user-email { font-size: 0.8rem; color: var(--text-2); }
-.upload-status { font-size: 0.75rem; color: #f5a623; }
+.upload-status { font-size: 0.75rem; color: var(--accent); }
 .upload-error  { font-size: 0.75rem; color: #ff453a; }
 
 /* Settings section (Appearance) */
@@ -393,7 +393,7 @@ const bestPaceDisplay = computed(() => {
 }
 
 .toggle-btn.on {
-  background: #f5a623;
+  background: var(--accent);
 }
 
 .toggle-thumb {
@@ -440,7 +440,7 @@ const bestPaceDisplay = computed(() => {
 
 .goal-input:focus {
   outline: none;
-  border-color: #f5a623;
+  border-color: var(--accent);
 }
 
 .goal-unit {
@@ -451,14 +451,16 @@ const bestPaceDisplay = computed(() => {
 /* Stats */
 .stats-section     { display: flex; flex-direction: column; gap: 0.75rem; }
 .section-label {
-  font-size: 0.75rem; font-weight: 700; color: var(--text-2);
-  text-transform: uppercase; letter-spacing: 0.08em;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem; font-weight: 700; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.18em;
   display: flex; align-items: center; justify-content: space-between;
 }
 .achievement-count {
   background: var(--bg-elevated);
-  color: #f5a623;
-  font-size: 0.7rem;
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
   padding: 0.2rem 0.5rem;
   border-radius: 20px;
 }
@@ -473,7 +475,7 @@ const bestPaceDisplay = computed(() => {
   align-items: center;
   gap: 0.2rem;
 }
-.lt-val { font-size: 1.2rem; font-weight: 700; color: #f5a623; font-variant-numeric: tabular-nums; }
+.lt-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.04em; color: var(--accent); font-variant-numeric: tabular-nums; }
 .lt-lbl { font-size: 0.6rem; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; text-align: center; }
 
 /* Achievements */
@@ -500,7 +502,7 @@ const bestPaceDisplay = computed(() => {
 }
 
 .achievement-card:not(.locked) {
-  border-color: rgba(245, 166, 35, 0.25);
+  border-color: var(--accent-tint);
 }
 
 .achievement-card.locked {

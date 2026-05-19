@@ -142,7 +142,7 @@
     </button>
 
     <!-- Recent runs section -->
-    <div class="section-header">Recent Runs</div>
+    <div class="section-header">// Recent Runs</div>
 
     <!-- ── Goal setup sheet ───────────────────────────────────── -->
     <Transition name="slide-up">
@@ -507,24 +507,26 @@ function formatDuration(ms) {
 }
 
 .wordmark {
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.2em;
-  color: #f5a623;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
   margin-bottom: 0.25rem;
 }
 
 .greeting h1 {
   margin: 0;
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.04em;
   color: var(--text);
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .sub {
   margin: 0.35rem 0 0;
   font-size: 0.9rem;
+  font-weight: 300;
   color: var(--text-2);
 }
 
@@ -545,16 +547,17 @@ function formatDuration(ms) {
 }
 
 .goal-label {
-  font-size: 0.72rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
   font-weight: 700;
-  color: var(--text-2);
+  color: var(--text-3);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.18em;
 }
 
 .goal-numbers { font-size: 0.88rem; }
-.goal-current { font-weight: 700; color: #f5a623; font-variant-numeric: tabular-nums; }
-.goal-sep     { color: var(--text-2); }
+.goal-current { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.04em; color: var(--accent); font-variant-numeric: tabular-nums; }
+.goal-sep     { color: var(--text-2); font-size: 0.82rem; }
 
 .goal-bar-track {
   height: 7px;
@@ -565,7 +568,7 @@ function formatDuration(ms) {
 
 .goal-bar-fill {
   height: 100%;
-  background: #f5a623;
+  background: var(--accent);
   border-radius: 99px;
   transition: width 0.4s ease;
 }
@@ -596,17 +599,20 @@ function formatDuration(ms) {
 }
 
 .stat-val {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #f5a623;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
 
 .stat-label {
-  font-size: 0.65rem;
-  color: #888;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: var(--text-3);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.16em;
 }
 
 /* Start button */
@@ -615,21 +621,21 @@ function formatDuration(ms) {
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  background: #f5a623;
-  color: #0f0f0f;
+  background: var(--accent);
+  color: var(--accent-text);
   border: none;
-  border-radius: 16px;
-  padding: 1.1rem 1.5rem;
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 0.1em;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  transition: opacity 0.15s, transform 0.1s;
   -webkit-tap-highlight-color: transparent;
 }
 
 .start-btn:active {
-  background: #d4901d;
+  opacity: 0.85;
   transform: scale(0.98);
 }
 
@@ -640,11 +646,12 @@ function formatDuration(ms) {
 
 /* Section header */
 .section-header {
-  font-size: 0.75rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
   font-weight: 700;
-  color: #888;
+  color: var(--text-3);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.18em;
 }
 
 /* Empty state */
@@ -714,14 +721,16 @@ function formatDuration(ms) {
 }
 
 .run-dist {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #f5a623;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
 }
 
 .run-duration {
-  font-size: 0.75rem;
-  color: #888;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--text-3);
 }
 
 /* ── Plan CTA (no plan yet) ──────────────────────────────────── */
@@ -791,13 +800,14 @@ function formatDuration(ms) {
 }
 
 .plan-chip {
-  background: rgba(245,166,35,0.12);
-  color: #f5a623;
-  font-size: 0.75rem;
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
   font-weight: 700;
   padding: 0.2rem 0.6rem;
   border-radius: 20px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.1em;
 }
 
 .plan-week-badge {
@@ -818,10 +828,11 @@ function formatDuration(ms) {
 }
 
 .plan-days-left {
-  font-size: 0.72rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
   font-weight: 700;
-  color: #f5a623;
-  background: rgba(245,166,35,0.1);
+  color: var(--accent);
+  background: var(--accent-tint);
   padding: 0.1rem 0.45rem;
   border-radius: 20px;
 }
@@ -844,7 +855,7 @@ function formatDuration(ms) {
 }
 
 .week-day.today {
-  background: rgba(245,166,35,0.12);
+  background: var(--accent-tint);
 }
 
 .week-day-label {
@@ -855,7 +866,7 @@ function formatDuration(ms) {
   letter-spacing: 0.04em;
 }
 
-.week-day.today .week-day-label { color: #f5a623; }
+.week-day.today .week-day-label { color: var(--accent); }
 
 .week-day-dot {
   font-size: 0.85rem;
@@ -883,12 +894,13 @@ function formatDuration(ms) {
 }
 
 .today-badge {
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.07em;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #f5a623;
-  background: rgba(245,166,35,0.12);
+  color: var(--accent);
+  background: var(--accent-tint);
   padding: 0.15rem 0.45rem;
   border-radius: 20px;
 }
@@ -906,9 +918,10 @@ function formatDuration(ms) {
 }
 
 .today-dist {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: #f5a623;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
 
@@ -924,15 +937,15 @@ function formatDuration(ms) {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: #f5a623;
-  color: #0f0f0f;
+  background: var(--accent);
+  color: var(--accent-text);
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 0.65rem 1rem;
-  font-size: 0.88rem;
-  font-weight: 800;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
   cursor: pointer;
-  letter-spacing: 0.02em;
   transition: opacity 0.15s, transform 0.1s;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1061,8 +1074,8 @@ function formatDuration(ms) {
 }
 
 .goal-option.selected {
-  border-color: #f5a623;
-  background: rgba(245,166,35,0.08);
+  border-color: var(--accent);
+  background: var(--accent-tint);
 }
 
 .goal-opt-emoji { font-size: 1.4rem; }
@@ -1073,7 +1086,7 @@ function formatDuration(ms) {
   color: var(--text);
 }
 
-.goal-option.selected .goal-opt-name { color: #f5a623; }
+.goal-option.selected .goal-opt-name { color: var(--accent); }
 
 .date-selects {
   display: grid;
@@ -1096,7 +1109,7 @@ function formatDuration(ms) {
   text-align: center;
 }
 
-.date-select:focus { border-color: #f5a623; }
+.date-select:focus { border-color: var(--accent); }
 
 .setup-error {
   margin: 0;
@@ -1171,7 +1184,7 @@ function formatDuration(ms) {
 }
 .ctrl-btn:active    { opacity: 0.75; transform: scale(0.97); }
 .ctrl-btn:disabled  { opacity: 0.45; cursor: default; }
-.ctrl-btn.primary   { background: #f5a623; color: #0f0f0f; }
+.ctrl-btn.primary   { background: var(--accent); color: var(--accent-text); font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; }
 .ctrl-btn.secondary { background: var(--bg-elevated); color: var(--text); }
 .ctrl-btn.danger    { background: #ff453a; color: #fff; }
 
@@ -1191,7 +1204,7 @@ function formatDuration(ms) {
   animation: dot-bounce 1.2s ease-in-out infinite;
 }
 
-.ai-dots.small span { width: 5px; height: 5px; background: #0f0f0f; }
+.ai-dots.small span { width: 5px; height: 5px; background: var(--accent-text); }
 
 .ai-dots span:nth-child(2) { animation-delay: 0.2s; }
 .ai-dots span:nth-child(3) { animation-delay: 0.4s; }
@@ -1272,7 +1285,7 @@ function formatDuration(ms) {
 }
 
 .fp-week--current {
-  border-color: #f5a623;
+  border-color: var(--accent);
 }
 
 .fp-week-header {
@@ -1296,13 +1309,14 @@ function formatDuration(ms) {
 }
 
 .fp-current-badge {
-  font-size: 0.65rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
   font-weight: 700;
-  background: #f5a623;
-  color: #0f0f0f;
+  background: var(--accent);
+  color: var(--accent-text);
   padding: 0.15rem 0.45rem;
   border-radius: 20px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.1em;
 }
 
 .fp-workouts {
@@ -1343,9 +1357,10 @@ function formatDuration(ms) {
 }
 
 .fp-wo-dist {
-  font-size: 0.75rem;
-  color: #f5a623;
-  font-weight: 600;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
 }
 
 .fp-wo-notes {

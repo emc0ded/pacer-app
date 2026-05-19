@@ -25,7 +25,7 @@
       <span class="nav-icon run-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <circle cx="12" cy="12" r="10"/>
-          <polygon points="10,8 16,12 10,16" fill="#0f0f0f"/>
+          <polygon points="10,8 16,12 10,16" fill="var(--accent-text)"/>
         </svg>
       </span>
       <span class="nav-label">Run</span>
@@ -90,7 +90,7 @@ import { RouterLink } from 'vue-router'
 }
 
 .nav-item.active {
-  color: #f5a623;
+  color: var(--accent);
 }
 
 .nav-icon {
@@ -108,17 +108,18 @@ import { RouterLink } from 'vue-router'
 
 /* The Run button has a larger, accent-colored icon */
 .run-item {
-  color: #f5a623;
+  color: var(--accent);
 }
 
 .run-item.active .run-icon svg circle {
-  fill: #f5a623;
+  fill: var(--accent);
 }
 
 .nav-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 700;
+  font-size: 7px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 </style>

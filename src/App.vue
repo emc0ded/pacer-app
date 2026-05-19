@@ -85,10 +85,10 @@ watch(
 }
 
 .splash-wordmark {
-  font-size: 1.1rem;
-  font-weight: 800;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
   letter-spacing: 0.28em;
-  color: #f5a623;
+  color: var(--accent);
   animation: pulse-opacity 1.2s ease-in-out infinite;
 }
 

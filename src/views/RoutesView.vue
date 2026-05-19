@@ -241,11 +241,12 @@ async function handleMapClick(e) {
 
   // Drop a marker immediately so the tap feels instant
   const isFirst = waypoints.value.length === 0
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()
   const el = document.createElement('div')
   el.style.cssText = `
     width: 12px; height: 12px; border-radius: 50%;
-    background: ${isFirst ? '#32d74b' : '#f5a623'};
-    border: 2px solid #fff;
+    background: ${isFirst ? '#32d74b' : accent};
+    border: 2px solid var(--bg, #111);
     box-shadow: 0 0 6px rgba(0,0,0,0.5);
   `
   const marker = new mapboxgl.Marker({ element: el }).setLngLat(coord).addTo(builderMap)
@@ -317,7 +318,7 @@ function updateBuilderRoute() {
       source: 'builder-route',
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
-        'line-color': '#f5a623',
+        'line-color': getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#E8F400',
         'line-width': 3,
         'line-opacity': 0.9,
       },
@@ -402,8 +403,8 @@ onUnmounted(() => {
 
 /* ── Header ─────────────────────────────────────────────────── */
 .view-header { display: flex; flex-direction: column; gap: 0.25rem; }
-.wordmark    { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.2em; color: #f5a623; }
-.view-title  { margin: 0; font-size: 1.6rem; font-weight: 700; color: var(--text); }
+.wordmark    { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.12em; color: var(--accent); }
+.view-title  { margin: 0; font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.04em; color: var(--text); }
 
 /* ── Empty state ────────────────────────────────────────────── */
 .empty-state {
@@ -471,8 +472,8 @@ onUnmounted(() => {
 }
 
 .run-route-btn {
-  background: #f5a623;
-  color: #0f0f0f;
+  background: var(--accent);
+  color: var(--accent-text);
   border: none;
   border-radius: 10px;
   padding: 0.5rem 0.9rem;
@@ -506,12 +507,13 @@ onUnmounted(() => {
 .new-route-btn {
   width: 100%;
   padding: 1rem;
-  background: #f5a623;
-  color: #0f0f0f;
+  background: var(--accent);
+  color: var(--accent-text);
   border: none;
-  border-radius: 16px;
-  font-size: 1rem;
-  font-weight: 700;
+  border-radius: 10px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.25rem;
+  letter-spacing: 0.1em;
   cursor: pointer;
   margin-top: auto;
   -webkit-tap-highlight-color: transparent;
@@ -586,9 +588,10 @@ onUnmounted(() => {
 }
 
 .builder-distance {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #f5a623;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
 
@@ -658,7 +661,7 @@ onUnmounted(() => {
 }
 
 .route-name-input:focus {
-  border-color: #f5a623;
+  border-color: var(--accent);
 }
 
 .route-name-input::placeholder { color: var(--text-3); }
@@ -682,7 +685,7 @@ onUnmounted(() => {
 
 .ctrl-btn:active   { opacity: 0.75; }
 .ctrl-btn:disabled { opacity: 0.4; cursor: default; }
-.ctrl-btn.primary   { background: #f5a623; color: #0f0f0f; }
+.ctrl-btn.primary   { background: var(--accent); color: var(--accent-text); font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; }
 .ctrl-btn.secondary { background: var(--bg-elevated); color: var(--text); }
 
 /* ── Transitions ─────────────────────────────────────────────── */
