@@ -311,7 +311,8 @@ function calcPace(run) {
 .run-bottom {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
 }
 
 .run-stat   { display: flex; align-items: baseline; gap: 0.25rem; }
