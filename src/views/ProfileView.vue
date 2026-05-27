@@ -144,7 +144,27 @@
 
       <!-- Sign out -->
       <button class="sign-out-btn" @click="handleSignOut">Sign Out</button>
+
+      <!-- Delete account -->
+      <button class="delete-account-btn" @click="showDeleteConfirm = true">Delete Account</button>
     </template>
+
+    <!-- Delete account confirmation modal -->
+    <Transition name="fade">
+      <div v-if="showDeleteConfirm" class="confirm-overlay" @click.self="showDeleteConfirm = false">
+        <div class="confirm-box">
+          <p class="confirm-title">Delete Account?</p>
+          <p class="confirm-msg">This will permanently delete your account and all your run data. This cannot be undone.</p>
+          <p v-if="deleteError" class="delete-error">{{ deleteError }}</p>
+          <div class="confirm-actions">
+            <button class="confirm-cancel" @click="showDeleteConfirm = false" :disabled="deleting">Cancel</button>
+            <button class="confirm-delete" @click="handleDeleteAccount" :disabled="deleting">
+              {{ deleting ? 'Deleting…' : 'Delete Forever' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
 
     <!-- App info -->
     <div class="app-info">
@@ -261,6 +281,28 @@ async function handlePhotoUpload(event) {
 // ── Weekly goal ────────────────────────────────────────────────
 function handleGoalChange(e) {
   settingsStore.saveGoal(authStore.uid, e.target.value)
+}
+
+// ── Delete account ─────────────────────────────────────────────
+const showDeleteConfirm = ref(false)
+const deleting          = ref(false)
+const deleteError       = ref('')
+
+async function handleDeleteAccount() {
+  deleting.value    = true
+  deleteError.value = ''
+  try {
+    await authStore.deleteAccount()
+    showDeleteConfirm.value = false
+  } catch (err) {
+    if (err.code === 'auth/requires-recent-login') {
+      deleteError.value = 'Please sign out and sign back in, then try again.'
+    } else {
+      deleteError.value = 'Something went wrong. Please try again.'
+    }
+  } finally {
+    deleting.value = false
+  }
 }
 
 // ── Best pace display ──────────────────────────────────────────
@@ -535,6 +577,89 @@ const bestPaceDisplay = computed(() => {
   transition: opacity 0.15s;
 }
 .sign-out-btn:active { opacity: 0.7; }
+
+/* Delete account */
+.delete-account-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background: transparent;
+  color: var(--text-3);
+  border: none;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.delete-account-btn:active { color: #ff453a; }
+
+/* Confirm modal */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.confirm-box {
+  background: var(--bg-card);
+  border-radius: 18px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.confirm-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.confirm-msg {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+.delete-error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #ff453a;
+}
+.confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+.confirm-cancel {
+  flex: 1;
+  padding: 0.75rem;
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.confirm-delete {
+  flex: 1;
+  padding: 0.75rem;
+  background: #ff453a;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.confirm-delete:disabled,
+.confirm-cancel:disabled { opacity: 0.5; cursor: default; }
 
 /* App info */
 .app-info {

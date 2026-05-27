@@ -14,10 +14,12 @@ import {
   OAuthProvider,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
+  deleteUser,
 } from 'firebase/auth'
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication'
-import { doc, getDoc } from 'firebase/firestore'
-import { auth, db } from '@/firebase'
+import { doc, getDoc, getDocs, deleteDoc, collection } from 'firebase/firestore'
+import { ref as storageRef, deleteObject } from 'firebase/storage'
+import { auth, db, storage } from '@/firebase'
 
 export const useAuthStore = defineStore('auth', () => {
   // ── State ───────────────────────────────────────────────────
@@ -114,6 +116,38 @@ export const useAuthStore = defineStore('auth', () => {
     customPhotoURL.value = url
   }
 
+  /**
+   * Permanently delete the user's account and all associated data.
+   * Deletes: all runs (Firestore), user doc (Firestore),
+   * profile photo (Storage), and the Firebase Auth account.
+   *
+   * Throws 'requires-recent-login' if the session is too old —
+   * caller should ask the user to sign out and sign back in.
+   */
+  async function deleteAccount() {
+    const currentUser = auth.currentUser
+    if (!currentUser) return
+
+    const userId = currentUser.uid
+
+    // 1. Delete all runs
+    const runsSnap = await getDocs(collection(db, 'users', userId, 'runs'))
+    await Promise.all(runsSnap.docs.map((d) => deleteDoc(d.ref)))
+
+    // 2. Delete profile photo from Storage (non-fatal if missing)
+    try {
+      await deleteObject(storageRef(storage, `users/${userId}/profile.jpg`))
+    } catch { /* no photo — that's fine */ }
+
+    // 3. Delete user Firestore document
+    await deleteDoc(doc(db, 'users', userId))
+
+    // 4. Delete the Firebase Auth account (may throw requires-recent-login)
+    await deleteUser(currentUser)
+
+    customPhotoURL.value = null
+  }
+
   return {
     user,
     loading,
@@ -128,5 +162,6 @@ export const useAuthStore = defineStore('auth', () => {
     signInWithApple,
     signOut,
     setCustomPhoto,
+    deleteAccount,
   }
 })

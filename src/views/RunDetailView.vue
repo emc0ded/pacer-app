@@ -73,9 +73,21 @@
             <span class="stat-val">{{ calcPace(run) }}</span>
             <span class="stat-lbl">/ mi</span>
           </div>
-          <div class="stat-card" v-if="run.effort">
-            <span class="stat-val">{{ effortLabel(run.effort) }}</span>
-            <span class="stat-lbl">effort</span>
+        </div>
+
+        <!-- Feel rating -->
+        <div class="feel-section">
+          <span class="feel-label">HOW DID IT FEEL?</span>
+          <div class="feel-dots">
+            <button
+              v-for="level in feelLevels"
+              :key="level.value"
+              class="feel-dot"
+              :class="{ selected: run.effort === level.value }"
+              :style="`--dot-color: ${level.color}; background: ${level.color}`"
+              :title="level.label"
+              @click.stop="setFeel(level.value)"
+            />
           </div>
         </div>
 
@@ -235,12 +247,18 @@ function handleDelete() {
 
 onUnmounted(() => clearTimeout(deleteTimer))
 
-// ── Helpers ────────────────────────────────────────────────────
-const effortEmojis = { 1:'😴', 2:'🙂', 3:'💪', 4:'🔥', 5:'💀' }
-const effortLabels = { 1:'Easy', 2:'Moderate', 3:'Hard', 4:'Very Hard', 5:'Max' }
+// ── Feel rating ────────────────────────────────────────────────
+const feelLevels = [
+  { value: 1, color: '#4ade80', label: 'Easy'     },
+  { value: 2, color: '#a3e635', label: 'Moderate' },
+  { value: 3, color: '#facc15', label: 'Hard'     },
+  { value: 4, color: '#fb923c', label: 'Very Hard'},
+  { value: 5, color: '#ef4444', label: 'Max'      },
+]
 
-function effortLabel(e) {
-  return `${effortEmojis[e] || ''} ${effortLabels[e] || e}`
+async function setFeel(value) {
+  if (!run.value) return
+  await runStore.updateRunFeel(authStore.uid, run.value.id, value)
 }
 
 function formatDate(iso) {
@@ -426,6 +444,49 @@ function calcPace(run) {
   color: var(--text-3);
   text-transform: uppercase;
   letter-spacing: 0.16em;
+}
+
+/* Feel rating */
+.feel-section {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.feel-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.feel-dots {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.feel-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  opacity: 0.45;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.feel-dot:active { transform: scale(0.9); }
+
+.feel-dot.selected {
+  opacity: 1;
+  transform: scale(1.25);
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--dot-color);
 }
 
 /* Splits card */

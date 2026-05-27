@@ -59,11 +59,6 @@ onMounted(() => {
     'bottom-left',
   )
 
-  // Zoom controls bottom-right
-  map.addControl(
-    new mapboxgl.NavigationControl({ showCompass: false }),
-    'bottom-right',
-  )
 
   map.on('load', () => {
     mapLoaded = true

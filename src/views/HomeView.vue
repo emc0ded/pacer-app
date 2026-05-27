@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <!-- Weekly goal -->
+    <!-- Weekly mileage chart -->
     <div class="goal-card">
       <div class="goal-header">
         <span class="goal-label">This Week</span>
@@ -26,13 +26,29 @@
           <span class="goal-sep"> / {{ settingsStore.weeklyGoalMi }} mi</span>
         </span>
       </div>
-      <div class="goal-bar-track">
+
+      <!-- Bar chart: one bar per day Sun–Sat -->
+      <div class="week-chart">
         <div
-          class="goal-bar-fill"
-          :style="{ width: goalPct + '%' }"
-          :class="{ complete: goalPct >= 100 }"
-        />
+          v-for="day in weekDailyMiles"
+          :key="day.label"
+          class="chart-col"
+          :class="{ today: day.isToday }"
+        >
+          <div class="chart-bar-wrap">
+            <div
+              class="chart-bar"
+              :style="{ height: day.heightPct + '%' }"
+              :class="{ 'has-miles': day.miles > 0, today: day.isToday }"
+            />
+          </div>
+          <span class="chart-day-label">{{ day.label }}</span>
+          <span class="chart-day-val" :class="{ 'has-miles': day.miles > 0 }">
+            {{ day.miles > 0 ? day.miles.toFixed(1) : '' }}
+          </span>
+        </div>
       </div>
+
       <p v-if="goalPct >= 100" class="goal-message">🎉 Weekly goal crushed!</p>
       <p v-else class="goal-message">{{ miToGo }} mi to go</p>
     </div>
@@ -46,7 +62,7 @@
           <span class="plan-cta-icon">🎯</span>
           <div>
             <div class="plan-cta-title">AI Training Plan</div>
-            <div class="plan-cta-sub">Set a race goal, get a personalised plan</div>
+            <div class="plan-cta-sub">Set a race goal, get a personalized plan</div>
           </div>
         </div>
         <span class="plan-cta-arrow">›</span>
@@ -289,7 +305,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRunStore } from '@/stores/run'
 import { useAuthStore } from '@/stores/auth'
 import { useSettingsStore } from '@/stores/settings'
@@ -303,6 +319,11 @@ const planStore     = usePlanStore()
 // ── Plan setup sheet ───────────────────────────────────────────
 const showSetup    = ref(false)
 const showFullPlan = ref(false)
+
+// Hide the bottom nav while any sheet is open
+watch([showSetup, showFullPlan], ([setup, plan]) => {
+  document.body.classList.toggle('sheet-open', setup || plan)
+})
 const setupGoal    = ref('')
 const setupMonth   = ref('')
 const setupDay     = ref('')
@@ -427,6 +448,38 @@ const weekDays = computed(() => {
 const goalPct = computed(() => {
   if (!settingsStore.weeklyGoalMi) return 0
   return Math.min(100, (runStore.weeklyMiles / settingsStore.weeklyGoalMi) * 100)
+})
+
+/** Miles per day for the current Sun–Sat week, used for the bar chart */
+const weekDailyMiles = computed(() => {
+  const now = new Date()
+  // Sunday of this week
+  const sunday = new Date(now)
+  sunday.setDate(now.getDate() - now.getDay())
+  sunday.setHours(0, 0, 0, 0)
+
+  const labels = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+  const todayIdx = now.getDay()
+
+  const days = labels.map((label, i) => {
+    const dayStart = new Date(sunday)
+    dayStart.setDate(sunday.getDate() + i)
+    const dayEnd = new Date(dayStart)
+    dayEnd.setDate(dayStart.getDate() + 1)
+
+    const miles = runStore.runs
+      .filter((r) => {
+        if (!r.date) return false
+        const d = new Date(r.date)
+        return d >= dayStart && d < dayEnd
+      })
+      .reduce((sum, r) => sum + (r.distance ?? 0) / 1609.344, 0)
+
+    return { label, miles, isToday: i === todayIdx }
+  })
+
+  const maxMiles = Math.max(...days.map((d) => d.miles), 0.1)
+  return days.map((d) => ({ ...d, heightPct: (d.miles / maxMiles) * 100 }))
 })
 
 const miToGo = computed(() => {
@@ -559,21 +612,75 @@ function formatDuration(ms) {
 .goal-current { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.04em; color: var(--accent); font-variant-numeric: tabular-nums; }
 .goal-sep     { color: var(--text-2); font-size: 0.82rem; }
 
-.goal-bar-track {
-  height: 7px;
+/* Weekly bar chart */
+.week-chart {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  align-items: end;
+}
+
+.chart-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.chart-bar-wrap {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.chart-bar {
+  width: 100%;
+  min-height: 3px;
+  border-radius: 4px 4px 0 0;
   background: var(--bg-elevated);
-  border-radius: 99px;
-  overflow: hidden;
+  transition: height 0.4s ease;
 }
 
-.goal-bar-fill {
-  height: 100%;
+.chart-bar.has-miles {
   background: var(--accent);
-  border-radius: 99px;
-  transition: width 0.4s ease;
+  opacity: 0.55;
 }
 
-.goal-bar-fill.complete { background: var(--success); }
+.chart-bar.has-miles.today {
+  opacity: 1;
+}
+
+.chart-col.today .chart-bar:not(.has-miles) {
+  background: var(--accent);
+  opacity: 0.2;
+}
+
+.chart-day-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chart-col.today .chart-day-label {
+  color: var(--accent);
+}
+
+.chart-day-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: transparent;
+  font-variant-numeric: tabular-nums;
+  min-height: 0.85rem;
+}
+
+.chart-day-val.has-miles {
+  color: var(--text-2);
+}
 
 .goal-message {
   margin: 0;
@@ -1008,7 +1115,7 @@ function formatDuration(ms) {
   border-radius: 20px 20px 0 0;
   display: flex;
   flex-direction: column;
-  z-index: 100;
+  z-index: 200;
   box-shadow: 0 -8px 40px rgba(0,0,0,0.4);
 }
 
@@ -1131,7 +1238,7 @@ function formatDuration(ms) {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.5);
-  z-index: 99;
+  z-index: 199;
 }
 
 /* ── Confirm reset overlay ───────────────────────────────────── */

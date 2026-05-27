@@ -135,6 +135,15 @@ export const useRunStore = defineStore('run', () => {
     }
   }
 
+  async function updateRunFeel(uid, runId, feel) {
+    if (!uid) {
+      const run = runs.value.find((r) => r.id === runId)
+      if (run) run.effort = feel
+      return
+    }
+    await updateDoc(doc(db, 'users', uid, 'runs', runId), { effort: feel })
+  }
+
   async function renameRun(uid, runId, newName) {
     if (!uid || !newName.trim()) return
     await updateDoc(doc(db, 'users', uid, 'runs', runId), { name: newName.trim() })
@@ -295,6 +304,7 @@ export const useRunStore = defineStore('run', () => {
     subscribeToRuns,
     unsubscribeRuns,
     addRun,
+    updateRunFeel,
     renameRun,
     removeRun,
     totalKm,

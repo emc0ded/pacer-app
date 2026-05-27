@@ -17,11 +17,11 @@ const _adaptTrainingPlan    = httpsCallable(functions, 'adaptTrainingPlan')
 
 /**
  * Get a post-run coaching summary from Claude.
- * @param {{ distanceKm: string, duration: string, pace: string }} stats
+ * @param {{ distanceKm: string, duration: string, pace: string, feel?: number }} stats
  * @returns {Promise<string>} coaching text
  */
-export async function getRunCoaching({ distanceKm, duration, pace }) {
-  const result = await _getRunCoaching({ distanceKm, duration, pace })
+export async function getRunCoaching({ distanceKm, duration, pace, feel }) {
+  const result = await _getRunCoaching({ distanceKm, duration, pace, feel: feel ?? null })
   return result.data.coaching
 }
 

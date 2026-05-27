@@ -23,6 +23,7 @@ import { useRouteStore } from '@/stores/route'
 import { useThemeStore } from '@/stores/theme'
 import { useSettingsStore } from '@/stores/settings'
 import { usePlanStore } from '@/stores/plan'
+import WatchBridge from '@/plugins/watchbridge'
 
 const authStore     = useAuthStore()
 const runStore      = useRunStore()
@@ -34,6 +35,20 @@ useThemeStore() // initialize immediately so data-theme is set before first rend
 // Resolve persisted Firebase session before showing any UI
 onMounted(() => {
   authStore.init()
+
+  // Save runs sent from Apple Watch to Firestore via existing addRun logic
+  WatchBridge.addListener('watchRun', (run) => {
+    const uid = authStore.uid
+    if (!uid) return
+    runStore.addRun(uid, {
+      date:        run.date,
+      distance:    run.distance,
+      duration:    run.duration,
+      coordinates: run.coordinates,
+      name:        'Watch Run',
+      source:      'appleWatch',
+    })
+  })
 })
 
 // Subscribe to Firestore runs + routes whenever the user signs in,
@@ -95,5 +110,10 @@ watch(
 @keyframes pulse-opacity {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.3; }
+}
+
+/* Hide bottom nav while a sheet/modal is open */
+body.sheet-open .bottom-nav {
+  display: none;
 }
 </style>

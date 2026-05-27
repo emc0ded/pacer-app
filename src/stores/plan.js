@@ -149,6 +149,7 @@ export const usePlanStore = defineStore('plan', () => {
         date:        r.date.slice(0, 10),
         distanceMi:  parseFloat((r.distance / 1609.344).toFixed(2)),
         durationMin: Math.round((r.duration || 0) / 60000),
+        effort:      r.effort ?? null,  // feel rating 1–5, null if not set
       }))
 
     // Remaining weeks (this week onward)

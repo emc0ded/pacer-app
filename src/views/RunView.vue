@@ -126,16 +126,17 @@
 
         <!-- Effort rating -->
         <div class="effort-section">
-          <span class="effort-label">How hard was it?</span>
+          <span class="effort-label">How did it feel?</span>
           <div class="effort-row">
             <button
               v-for="level in effortLevels"
               :key="level.value"
               class="effort-btn"
               :class="{ selected: effortRating === level.value }"
+              :style="effortRating === level.value ? `--btn-color: ${level.color}` : ''"
               @click="effortRating = level.value"
             >
-              <span class="effort-emoji">{{ level.emoji }}</span>
+              <span class="effort-circle" :style="`background: ${level.color}`" />
               <span class="effort-name">{{ level.label }}</span>
             </button>
           </div>
@@ -174,7 +175,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import mapboxgl from 'mapbox-gl'
 import MapboxMap from '@/components/MapboxMap.vue'
 import { useRunStore } from '@/stores/run'
@@ -248,12 +249,28 @@ const runName = ref('')
 
 // Effort rating
 const effortRating = ref(null)
+
+// Prevent double-fetching when feel is selected after initial load
+const feelCoachingDone = ref(false)
+
+// When user selects feel: re-fetch coaching with feel context (once per run)
+watch(effortRating, (val) => {
+  if (!val || feelCoachingDone.value || !showSummary.value) return
+  feelCoachingDone.value = true
+  fetchAIInsights(
+    (summaryData.value._distance / 1000).toFixed(2),
+    summaryData.value.duration,
+    summaryData.value.pace,
+    summaryData.value._duration,
+    val,
+  )
+})
 const effortLevels = [
-  { value: 1, emoji: '😴', label: 'Easy'   },
-  { value: 2, emoji: '🙂', label: 'Moderate'},
-  { value: 3, emoji: '💪', label: 'Hard'    },
-  { value: 4, emoji: '🔥', label: 'V. Hard' },
-  { value: 5, emoji: '💀', label: 'Max'     },
+  { value: 1, color: '#4ade80', label: 'Easy'    },
+  { value: 2, color: '#a3e635', label: 'Moderate' },
+  { value: 3, color: '#facc15', label: 'Hard'     },
+  { value: 4, color: '#fb923c', label: 'V. Hard'  },
+  { value: 5, color: '#ef4444', label: 'Max'      },
 ]
 
 // ── Computed display values ────────────────────────────────────
@@ -533,25 +550,35 @@ function stopRun() {
   showSummary.value = true
 
   // Kick off both AI calls in parallel — don't await, let them stream in
-  fetchAIInsights(km.toFixed(2), formattedDuration.value, paceStr)
+  fetchAIInsights(km.toFixed(2), formattedDuration.value, paceStr, elapsedMs.value)
 }
 
-async function fetchAIInsights(distanceKm, duration, pace) {
+async function fetchAIInsights(distanceKm, duration, pace, durationMs = 0, feel = null) {
   coachingText.value    = ''
   coachingError.value   = false
   coachingLoading.value = true
 
+  // Not enough data for meaningful coaching
+  if (durationMs < 10000) {
+    coachingText.value    = 'This run was too short to analyze — not enough data to provide coaching feedback.'
+    coachingLoading.value = false
+    return
+  }
+
   try {
-    // Run coaching + route name in parallel
+    // Run coaching + route name in parallel (route name only on first call, not feel re-fetch)
+    const shouldFetchName = !summaryData.value._aiName && !runName.value
     const [coaching, routeName] = await Promise.all([
-      getRunCoaching({ distanceKm, duration, pace }),
-      generateRouteName({ distanceKm, pace }),
+      getRunCoaching({ distanceKm, duration, pace, feel }),
+      shouldFetchName ? generateRouteName({ distanceKm, pace }) : Promise.resolve(null),
     ])
 
-    coachingText.value           = coaching
-    summaryData.value._aiName    = routeName
-    // Only populate the name field if the user hasn't typed anything yet
-    if (!runName.value) runName.value = routeName
+    coachingText.value = coaching
+    if (routeName) {
+      summaryData.value._aiName = routeName
+      // Only populate the name field if the user hasn't typed anything yet
+      if (!runName.value) runName.value = routeName
+    }
   } catch (err) {
     console.error('[coaching]', err)
     coachingError.value = true
@@ -577,12 +604,13 @@ async function saveRun() {
       effort:        effortRating.value,
       coaching:    coachingText.value || null,
     })
-    showSummary.value  = false
-    elapsedMs.value    = 0
-    effortRating.value = null
-    coachingText.value = ''
-    runName.value      = ''
-    splits.value       = []
+    showSummary.value      = false
+    elapsedMs.value        = 0
+    effortRating.value     = null
+    feelCoachingDone.value = false
+    coachingText.value     = ''
+    runName.value          = ''
+    splits.value           = []
     routeStore.clearSelectedRoute()
   } catch (err) {
     console.error('[run] save error:', err)
@@ -592,13 +620,14 @@ async function saveRun() {
 }
 
 function discardRun() {
-  showSummary.value  = false
-  elapsedMs.value    = 0
-  effortRating.value = null
-  coachingText.value = ''
-  runName.value      = ''
-  splits.value       = []
-  splitToast.value   = null
+  showSummary.value      = false
+  elapsedMs.value        = 0
+  effortRating.value     = null
+  feelCoachingDone.value = false
+  coachingText.value     = ''
+  runName.value          = ''
+  splits.value           = []
+  splitToast.value       = null
   routeStore.clearSelectedRoute()
 }
 
@@ -881,11 +910,22 @@ onUnmounted(() => {
 }
 
 .effort-btn.selected {
-  border-color: var(--accent);
-  background: var(--accent-tint);
+  border-color: var(--btn-color, var(--accent));
+  background: var(--bg-card);
 }
 
-.effort-emoji { font-size: 1.3rem; }
+.effort-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.effort-btn.selected .effort-circle {
+  transform: scale(1.25);
+  box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px var(--btn-color, var(--accent));
+}
 
 .effort-name {
   font-size: 0.6rem;
@@ -893,6 +933,10 @@ onUnmounted(() => {
   color: var(--text-2);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.effort-btn.selected .effort-name {
+  color: var(--text);
 }
 
 .effort-btn.selected .effort-name { color: var(--accent); }

@@ -66,6 +66,10 @@
 	<string>Pacer uses your location to track your run route and distance in real time.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Pacer uses your location to track your run route and distance.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Pacer uses your camera so you can take a profile photo.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Pacer accesses your photo library so you can choose a profile photo.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Pacer reads your health data to complement your running stats.</string>
 	<key>NSHealthUpdateUsageDescription</key>

@@ -31,6 +31,8 @@
         v-for="run in runStore.runs"
         :key="run.id"
         class="run-card"
+        :style="run.effort ? `--feel-color: ${feelColor(run.effort)}` : ''"
+        :class="{ 'has-feel': !!run.effort }"
         @click="$router.push(`/history/${run.id}`)"
       >
         <!-- Card body: map preview + text content -->
@@ -125,6 +127,13 @@ import RunMapPreview from '@/components/RunMapPreview.vue'
 
 const runStore  = useRunStore()
 const authStore = useAuthStore()
+
+// ── Feel color for left border ─────────────────────────────────
+const feelColors = { 1: '#4ade80', 2: '#a3e635', 3: '#facc15', 4: '#fb923c', 5: '#ef4444' }
+
+function feelColor(value) {
+  return feelColors[value] ?? 'transparent'
+}
 
 // ── Rename ─────────────────────────────────────────────────────
 const editingId   = ref(null)
@@ -231,11 +240,17 @@ function calcPace(run) {
 .run-card {
   background: var(--bg-card);
   border-radius: 14px;
+  border-left: 3px solid transparent;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.run-card.has-feel {
+  border-left-color: var(--feel-color);
 }
 
 /* Two-column body: thumbnail | content */
@@ -318,6 +333,51 @@ function calcPace(run) {
 .run-stat   { display: flex; align-items: baseline; gap: 0.25rem; }
 .r-val      { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.04em; color: var(--accent); font-variant-numeric: tabular-nums; }
 .r-lbl      { font-size: 0.68rem; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* Feel rating row */
+.feel-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-sub);
+}
+
+.feel-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.feel-dots {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.feel-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  opacity: 0.45;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.feel-dot:active { transform: scale(0.9); }
+
+.feel-dot.selected {
+  opacity: 1;
+  transform: scale(1.25);
+  box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px currentColor;
+}
 
 /* Splits accordion */
 .splits-section {
